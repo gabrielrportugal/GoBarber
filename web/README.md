@@ -1,2 +1,0 @@
-# gobarberweb
-Aplicação GoBarber
