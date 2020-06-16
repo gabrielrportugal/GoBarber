@@ -6,7 +6,6 @@ import React, {
   useEffect,
 } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
-
 import api from '../services/api';
 
 interface AuthState {
@@ -14,7 +13,7 @@ interface AuthState {
   user: object;
 }
 
-interface SignInCredentias {
+interface SignInCredentials {
   email: string;
   password: string;
 }
@@ -22,7 +21,7 @@ interface SignInCredentias {
 interface AuthContextData {
   user: object;
   loading: boolean;
-  signIn(credentials: SignInCredentias): Promise<void>;
+  signIn(credentials: SignInCredentials): Promise<void>;
   signOut(): void;
 }
 
@@ -33,21 +32,27 @@ const AuthProvider: React.FC = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function loadStoragedData(): Promise<void> {
+    async function loadStorageData(): Promise<void> {
       const [token, user] = await AsyncStorage.multiGet([
         '@GoBarber:token',
         '@GoBarber:user',
       ]);
+
       if (token[1] && user[1]) {
         setData({ token: token[1], user: JSON.parse(user[1]) });
       }
+
       setLoading(false);
     }
-    loadStoragedData();
+
+    loadStorageData();
   }, []);
 
-  const signIn = useCallback(async ({ email, password }: SignInCredentias) => {
-    const response = await api.post('sessions', { email, password });
+  const signIn = useCallback(async ({ email, password }) => {
+    const response = await api.post('sessions', {
+      email,
+      password,
+    });
 
     const { token, user } = response.data;
 
@@ -60,13 +65,13 @@ const AuthProvider: React.FC = ({ children }) => {
   }, []);
 
   const signOut = useCallback(async () => {
-    await AsyncStorage.multiRemove(['@GoBarber:token', '@GoBarber:user']);
+    await AsyncStorage.multiRemove(['@GoBarber:user', '@GoBarber:token']);
 
     setData({} as AuthState);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user: data.user, signIn, signOut, loading }}>
+    <AuthContext.Provider value={{ user: data.user, loading, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );

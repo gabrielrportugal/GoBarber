@@ -1,6 +1,6 @@
 import React, {
-  useEffect,
   useRef,
+  useEffect,
   useImperativeHandle,
   forwardRef,
   useState,
@@ -53,11 +53,11 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
   }));
 
   useEffect(() => {
-    registerField<string>({
+    registerField({
       name: fieldName,
       ref: inputValueRef.current,
       path: 'value',
-      setValue(ref: any, value) {
+      setValue(ref: any, value: string) {
         inputValueRef.current.value = value;
         inputElementRef.current.setNativeProps({ text: value });
       },
@@ -75,6 +75,7 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
         size={20}
         color={isFocused || isFilled ? '#ff9000' : '#666360'}
       />
+
       <TextInput
         ref={inputElementRef}
         keyboardAppearance="dark"

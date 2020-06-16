@@ -1,10 +1,10 @@
 import React, { useRef, useCallback } from 'react';
 import {
   Image,
-  View,
-  ScrollView,
   KeyboardAvoidingView,
   Platform,
+  View,
+  ScrollView,
   TextInput,
   Alert,
 } from 'react-native';
@@ -15,51 +15,51 @@ import { FormHandles } from '@unform/core';
 import * as Yup from 'yup';
 
 import api from '../../services/api';
-import getValidationsErrors from '../../utils/getValidationErrors';
+
+import getValidationErrors from '../../utils/getValidationErrors';
+
 import Input from '../../components/Input';
 import Button from '../../components/Button';
-import logoImg from '../../assets/logo.png';
-import { Container, Title, BackToSignIn, BackToSignInText } from './styles';
 
-interface SignUpFormData {
-  name: string;
-  email: string;
-  password: string;
-}
+import logoImg from '../../assets/logo.png';
+
+import { Container, Title, BackToSignIn, BackToSignInText } from './styles';
 
 const SignUp: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
-  const emailInputRef = useRef<TextInput>(null);
-  const passwordInputRef = useRef<TextInput>(null);
-
   const navigation = useNavigation();
 
-  const handleSignUp = useCallback(
-    async (data: SignUpFormData) => {
+  const emailInputRef = useRef<TextInput>(null);
+  const passwordIputRef = useRef<TextInput>(null);
+
+  const handleSignup = useCallback(
+    async (data: object) => {
       try {
         formRef.current?.setErrors({});
 
         const schema = Yup.object().shape({
           name: Yup.string().required('Nome obrigatório'),
           email: Yup.string()
-            .required('Email obrigatório')
-            .email('Digite um email válido'),
-          password: Yup.string().min(6, 'No mínimo 6 digitos'),
+            .required('E-mail obrigatório')
+            .email('Digite um e-mail válido'),
+          password: Yup.string().min(6, 'No mínimo 6 dígitos'),
         });
 
-        await schema.validate(data, { abortEarly: false });
+        await schema.validate(data, {
+          abortEarly: false,
+        });
 
         await api.post('/users', data);
 
         Alert.alert(
           'Cadastro realizado com sucesso',
-          'Você já pode fazer seu logon no GoBarber',
+          'Você já pode fazer o login na aplicação.',
         );
 
-        navigation.navigate('SignIn');
+        navigation.goBack();
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
-          const errors = getValidationsErrors(err);
+          const errors = getValidationErrors(err);
 
           formRef.current?.setErrors(errors);
 
@@ -68,7 +68,7 @@ const SignUp: React.FC = () => {
 
         Alert.alert(
           'Erro no cadastro',
-          'Ocorreu um erro ao fazer cadastro, tente novamente.',
+          'Ocorreu um erro ao fazer o cadastro, tente novamente',
         );
       }
     },
@@ -88,10 +88,12 @@ const SignUp: React.FC = () => {
         >
           <Container>
             <Image source={logoImg} />
+
             <View>
               <Title>Crie sua conta</Title>
             </View>
-            <Form ref={formRef} onSubmit={handleSignUp}>
+
+            <Form ref={formRef} onSubmit={handleSignup}>
               <Input
                 autoCapitalize="words"
                 name="name"
@@ -100,19 +102,21 @@ const SignUp: React.FC = () => {
                 returnKeyType="next"
                 onSubmitEditing={() => emailInputRef.current?.focus()}
               />
+
               <Input
                 ref={emailInputRef}
+                keyboardType="email-address"
                 autoCorrect={false}
                 autoCapitalize="none"
-                keyboardType="email-address"
                 name="email"
                 icon="mail"
                 placeholder="E-mail"
                 returnKeyType="next"
-                onSubmitEditing={() => passwordInputRef.current?.focus()}
+                onSubmitEditing={() => passwordIputRef.current?.focus()}
               />
+
               <Input
-                ref={passwordInputRef}
+                ref={passwordIputRef}
                 secureTextEntry
                 name="password"
                 icon="lock"
@@ -121,21 +125,19 @@ const SignUp: React.FC = () => {
                 returnKeyType="send"
                 onSubmitEditing={() => formRef.current?.submitForm()}
               />
-              <Button
-                onPress={() => {
-                  formRef.current?.submitForm();
-                }}
-              >
+
+              <Button onPress={() => formRef.current?.submitForm()}>
                 Entrar
               </Button>
             </Form>
           </Container>
         </ScrollView>
+
+        <BackToSignIn onPress={() => navigation.goBack()}>
+          <Icon name="arrow-left" size={20} color="#fff" />
+          <BackToSignInText>Voltar para logon</BackToSignInText>
+        </BackToSignIn>
       </KeyboardAvoidingView>
-      <BackToSignIn onPress={() => navigation.goBack()}>
-        <Icon name="arrow-left" size={20} color="#fff" />
-        <BackToSignInText>Voltar para logon</BackToSignInText>
-      </BackToSignIn>
     </>
   );
 };
