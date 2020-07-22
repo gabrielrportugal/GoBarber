@@ -14,8 +14,8 @@
     <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/higorhms/GoBarber?style=for-the-badge">
   </a>
 
-   <a href="https://github.com/higorhms/GoBarber/stargazers" target="_blank">
-    <img alt="Stargazers" src="https://img.shields.io/github/stars/higorhms/GoBarber?style=for-the-badge">
+   <a href="https://github.com/gabrielrportugal/GoBarber/stargazers" target="_blank">
+    <img alt="Stargazers" src="https://img.shields.io/github/stars/gabrielrportugal/GoBarber?style=for-the-badge">
   </a>
 </p>
 
